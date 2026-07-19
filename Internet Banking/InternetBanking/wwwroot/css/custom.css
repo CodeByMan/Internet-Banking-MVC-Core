@@ -1,0 +1,11 @@
+/* Legacy overrides intentionally minimized. Premium theme styles live in tailadmin-premium.css */
+body {
+  margin-bottom: 0;
+}
+
+.truncate-text {
+  max-width: 240px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

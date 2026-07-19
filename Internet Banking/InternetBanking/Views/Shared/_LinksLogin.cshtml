@@ -1,0 +1,12 @@
+﻿@using InternetBanking.Core.Application.ViewModels.User
+@model UserViewModel
+
+<div class="d-lg-flex col-lg-3 justify-content-lg-end gap-2">
+    @if (User != null)
+    {
+        <span class="me-2 p-1">Welcome, @Model.UserName</span>
+        <form method="post" asp-controller="Auth" asp-action="LogOut" class="d-inline">
+            <button type="submit" class="btn btn-outline-danger btn-sm">Sign Out</button>
+        </form>
+    }
+</div>

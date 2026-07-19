@@ -1,0 +1,88 @@
+﻿@using InternetBanking.Core.Application.Enums
+@using System.Security.Claims
+@using InternetBanking.Core.Application.ViewModels.User
+@model List<UserViewModel>
+
+@{
+    var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+    ViewData["Title"] = "User Management";
+}
+
+@if (TempData["UserActionError"] is string userActionError)
+{
+    <div class="alert alert-danger" role="alert">@userActionError</div>
+}
+
+<div class="page-header">
+    <div>
+        <span class="badge badge-soft brand mb-2">Administration</span>
+        <h1>User management</h1>
+        <p>Create, update, activate, and review customer records with a cleaner enterprise-style operations table.</p>
+    </div>
+    <div class="page-actions">
+        <a asp-controller="User" asp-action="Create" class="btn btn-primary"><i class="bi bi-person-plus-fill me-2"></i>Add User</a>
+    </div>
+</div>
+
+<section class="card app-card">
+    <div class="card-body p-4">
+        <div class="card-title-row">
+            <div>
+                <h3>Registered users</h3>
+                <p>All administrator and client records currently available in the banking workspace.</p>
+            </div>
+        </div>
+
+        <div class="data-table-wrap">
+            <table class="table align-middle">
+                <thead>
+                    <tr>
+                        <th>Full Name</th>
+                        <th>National ID</th>
+                        <th>Email</th>
+                        <th>Username</th>
+                        <th>Role</th>
+                        <th>Status</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var user in Model)
+                    {
+                        <tr>
+                            <td class="table-highlight">@user.FirstName @user.LastName</td>
+                            <td>@user.IdNumber</td>
+                            <td>@user.Email</td>
+                            <td>@user.UserName</td>
+                            <td><span class="badge badge-soft brand">@(user.UserType == Roles.Admin.ToString() ? "Administrator" : "Client")</span></td>
+                            <td>
+                                <span class="badge @(user.IsActive ? "badge-soft success" : "badge-soft error")">
+                                    @(user.IsActive ? "Active" : "Inactive")
+                                </span>
+                            </td>
+                            <td class="text-end">
+                                @if (currentUserId != null && user.Id != currentUserId)
+                                {
+                                    <div class="d-flex flex-wrap justify-content-end gap-2">
+                                        @if (user.UserType != Roles.Admin.ToString())
+                                        {
+                                            <a class="btn btn-outline-primary btn-sm" asp-controller="Product" asp-action="Index" asp-route-userId="@user.Id">
+                                                <i class="bi bi-wallet2 me-1"></i>Products
+                                            </a>
+                                        }
+                                        <a class="btn btn-outline-secondary btn-sm" asp-controller="User" asp-action="ConfirmAction" asp-route-id="@user.Id">
+                                            <i class="bi bi-person-gear me-1"></i>@(user.IsActive ? "Deactivate" : "Activate")
+                                        </a>
+                                        <a class="btn btn-outline-secondary btn-sm" asp-controller="User" asp-action="Edit" asp-route-id="@user.Id">
+                                            <i class="bi bi-pencil-square me-1"></i>Edit
+                                        </a>
+                                    </div>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>

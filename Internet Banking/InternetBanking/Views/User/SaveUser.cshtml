@@ -1,0 +1,127 @@
+﻿@using InternetBanking.Core.Application.Enums
+@model InternetBanking.Core.Application.ViewModels.User.SaveUserViewModel
+@{
+    bool editMode = Model.Id != null;
+    ViewData["Title"] = editMode ? "Edit User" : "Create User";
+}
+
+<div class="page-header">
+    <div>
+        <span class="badge badge-soft brand mb-2">@(editMode ? "Update profile" : "Onboarding")</span>
+        <h1>@(editMode ? $"Edit {Model.UserName}" : "Create a new banking user")</h1>
+        <p>Administrators can provision customer access, assign the correct role, and optionally fund a starting savings balance.</p>
+    </div>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-xl-8 col-lg-9">
+        <div class="card app-card">
+            <div class="card-body p-4 p-lg-5">
+                @if (Model.HasError)
+                {
+                    <div class="alert alert-danger mb-4" role="alert">@Model.Error</div>
+                }
+
+                <form method="post" asp-controller="User" asp-action="@(editMode ? "Edit" : "Create")">
+                    <input type="hidden" asp-for="Id" />
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                    <div class="responsive-stack mb-3">
+                        <div>
+                            <label asp-for="FirstName" class="form-label"></label>
+                            <input asp-for="FirstName" class="form-control" />
+                            <span asp-validation-for="FirstName" class="text-danger"></span>
+                        </div>
+                        <div>
+                            <label asp-for="LastName" class="form-label"></label>
+                            <input asp-for="LastName" class="form-control" />
+                            <span asp-validation-for="LastName" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="responsive-stack mb-3">
+                        <div>
+                            <label asp-for="Email" class="form-label"></label>
+                            <input asp-for="Email" class="form-control" />
+                            <span asp-validation-for="Email" class="text-danger"></span>
+                        </div>
+                        <div>
+                            <label asp-for="IdNumber" class="form-label"></label>
+                            <input asp-for="IdNumber" class="form-control" />
+                            <span asp-validation-for="IdNumber" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="UserName" class="form-label"></label>
+                        <div class="input-group">
+                            <span class="input-group-text">@@</span>
+                            <input asp-for="UserName" class="form-control" />
+                        </div>
+                        <span asp-validation-for="UserName" class="text-danger"></span>
+                    </div>
+
+                    <div class="responsive-stack mb-3">
+                        <div>
+                            <label asp-for="Password" class="form-label"></label>
+                            <input asp-for="Password" class="form-control" />
+                            <span asp-validation-for="Password" class="text-danger"></span>
+                        </div>
+                        <div>
+                            <label asp-for="ConfirmPassword" class="form-label"></label>
+                            <input asp-for="ConfirmPassword" class="form-control" />
+                            <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    @if (!editMode)
+                    {
+                        <div class="mb-3">
+                            <label asp-for="UserType" class="form-label"></label>
+                            <select asp-for="UserType" asp-items="Html.GetEnumSelectList<Roles>()" class="form-select">
+                                <option value="0">Select a user role</option>
+                            </select>
+                            <span asp-validation-for="UserType" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3" id="openingAmountWrapper" style="display:none;">
+                            <label asp-for="InitialAmount" class="form-label"></label>
+                            <input asp-for="InitialAmount" type="number" step="0.01" min="0" class="form-control" />
+                            <span asp-validation-for="InitialAmount" class="text-danger"></span>
+                        </div>
+                    }
+                    else if (Model.UserType == Roles.Client)
+                    {
+                        <div class="mb-3">
+                            <label asp-for="InitialAmount" class="form-label"></label>
+                            <input asp-for="InitialAmount" type="number" step="0.01" min="0" class="form-control" />
+                            <div class="form-text">Optional top-up to the client’s primary savings account.</div>
+                            <span asp-validation-for="InitialAmount" class="text-danger"></span>
+                        </div>
+                    }
+
+                    <div class="d-flex justify-content-end gap-2 mt-4 flex-wrap">
+                        <a class="btn btn-outline-secondary" asp-action="Index">Cancel</a>
+                        <button class="btn btn-primary">Save User</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        $(function () {
+            $('#UserType').on('change', function () {
+                if ($(this).val() == '@((int)Roles.Client)') {
+                    $('#openingAmountWrapper').show();
+                } else {
+                    $('#openingAmountWrapper').hide();
+                    $('#InitialAmount').val('');
+                }
+            }).trigger('change');
+        });
+    </script>
+}

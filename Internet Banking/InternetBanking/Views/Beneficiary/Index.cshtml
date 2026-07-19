@@ -1,0 +1,101 @@
+@using InternetBanking.Core.Application.ViewModels.Beneficiary
+@model SaveBeneficiaryViewModel
+@{
+    var beneficiaries = ViewBag.Beneficiaries as List<BeneficiaryViewModel> ?? new List<BeneficiaryViewModel>();
+    ViewData["Title"] = "Beneficiaries";
+}
+
+<div class="page-header">
+    <div>
+        <span class="badge badge-soft brand mb-2">Recipient management</span>
+        <h1>Beneficiaries</h1>
+        <p>Save trusted recipients to make recurring transfers faster and more convenient.</p>
+    </div>
+    <div class="page-actions">
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#beneficiaryModal">
+            <i class="bi bi-plus-circle-fill me-2"></i>Add Beneficiary
+        </button>
+    </div>
+</div>
+
+<section class="card app-card">
+    <div class="card-body p-4">
+        <div class="data-table-wrap">
+            <table class="table align-middle">
+                <thead>
+                    <tr>
+                        <th>Beneficiary Name</th>
+                        <th>Account Number</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (beneficiaries.Any())
+                    {
+                        @foreach (var beneficiary in beneficiaries)
+                        {
+                            <tr>
+                                <td class="table-highlight">@beneficiary.FullName</td>
+                                <td>@beneficiary.AccountNumber</td>
+                                <td class="text-end">
+                                    <a class="btn btn-outline-danger btn-sm" asp-controller="Beneficiary" asp-action="Delete" asp-route-id="@beneficiary.Id">
+                                        <i class="bi bi-trash-fill me-1"></i>Delete
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="3">
+                                <div class="empty-state">
+                                    <strong>No beneficiaries added yet.</strong>
+                                    <div class="text-secondary mt-2">Create your first saved recipient to unlock faster beneficiary payments.</div>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+
+<div class="modal fade" id="beneficiaryModal" tabindex="-1" aria-labelledby="beneficiaryModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content card app-card">
+            <div class="modal-header border-0 pb-0">
+                <h2 class="modal-title h5" id="beneficiaryModalLabel">Add a beneficiary</h2>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body pt-3 p-4">
+                @if (Model.HasError)
+                {
+                    <div class="alert alert-danger mb-3" role="alert">@Model.Error</div>
+                }
+                <form method="post" asp-controller="Beneficiary" asp-action="AddBeneficiary">
+                    <div asp-validation-summary="All" class="text-danger mb-3"></div>
+                    <div class="mb-3">
+                        <label asp-for="AccountNumberBeneficiary" class="form-label"></label>
+                        <input asp-for="AccountNumberBeneficiary" class="form-control" placeholder="Enter an existing account number" />
+                        <span asp-validation-for="AccountNumberBeneficiary" class="text-danger"></span>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Save Beneficiary</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        $(function () {
+            if (@Html.Raw(Model.HasError.ToString().ToLower())) {
+                const modal = new bootstrap.Modal(document.getElementById('beneficiaryModal'));
+                modal.show();
+            }
+        });
+    </script>
+}

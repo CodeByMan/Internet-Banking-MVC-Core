@@ -1,0 +1,9 @@
+<Project>
+  <PropertyGroup>
+    <Authors>Muhammad Ali Nawaz</Authors>
+    <Company>Muhammad Ali Nawaz</Company>
+    <Copyright>Copyright © 2026 Muhammad Ali Nawaz</Copyright>
+    <RepositoryType>git</RepositoryType>
+    <Description>Educational ASP.NET Core MVC Internet Banking demonstration. Not production banking software.</Description>
+  </PropertyGroup>
+</Project>

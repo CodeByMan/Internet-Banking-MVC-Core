@@ -1,0 +1,18 @@
+@{
+    ViewData["Title"] = "Access Denied";
+}
+
+<div class="row justify-content-center mt-4">
+    <div class="col-lg-7 col-xl-6">
+        <div class="card app-card">
+            <div class="card-body p-4 p-lg-5">
+                <div class="confirm-panel">
+                    <span class="badge badge-soft error mb-3">Authorization required</span>
+                    <h1 class="h3 mb-3">Access denied</h1>
+                    <p class="text-secondary mb-4">You do not have permission to open this page. Return to the appropriate dashboard for your role.</p>
+                    <a asp-controller="Home" asp-action="Index" class="btn btn-primary">Back to dashboard</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,25 @@
+@model ErrorViewModel
+@{
+    ViewData["Title"] = "Error";
+}
+
+<div class="row justify-content-center mt-4">
+    <div class="col-xl-7 col-lg-8">
+        <div class="card app-card">
+            <div class="card-body p-4 p-lg-5">
+                <div class="confirm-panel">
+                    <span class="badge badge-soft error mb-3">Unexpected issue</span>
+                    <h1 class="h3 mb-3">An error occurred while processing your request.</h1>
+                    <p class="text-secondary">The application encountered a problem. Use the request id below for local debugging and troubleshooting.</p>
+                    @if (Model.ShowRequestId)
+                    {
+                        <div class="demo-item mt-4 text-start">
+                            <strong>Request ID</strong>
+                            <span><code>@Model.RequestId</code></span>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

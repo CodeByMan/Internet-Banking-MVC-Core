@@ -1,0 +1,66 @@
+﻿@using InternetBanking.Core.Application.Enums
+@model InternetBanking.Core.Application.ViewModels.Product.SaveProductViewModel
+@{
+    ViewData["Title"] = "Create Product";
+}
+
+<div class="page-header">
+    <div>
+        <span class="badge badge-soft brand mb-2">Product provisioning</span>
+        <h1>Create a banking product</h1>
+        <p>Assign a savings account, credit card, or loan to the selected customer profile.</p>
+    </div>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-lg-7 col-xl-6">
+        <div class="card app-card">
+            <div class="card-body p-4 p-lg-5">
+                <form method="post" asp-controller="Product" asp-action="Create">
+                    <input type="hidden" asp-for="UserId" />
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                    <div class="mb-3">
+                        <label asp-for="ProductType" class="form-label"></label>
+                        <select asp-for="ProductType" asp-items="Html.GetEnumSelectList<ProductType>()" class="form-select">
+                            <option value="0">Select a product type</option>
+                        </select>
+                        <span asp-validation-for="ProductType" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label id="amountLabel" asp-for="Amount" class="form-label"></label>
+                        <input type="number" asp-for="Amount" step="0.01" min="0.01" class="form-control" />
+                        <span asp-validation-for="Amount" class="text-danger"></span>
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-2 mt-4 flex-wrap">
+                        <a class="btn btn-outline-secondary" asp-action="Index" asp-route-userId="@Model.UserId">Cancel</a>
+                        <button class="btn btn-primary">Save Product</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        $(function () {
+            const productType = $('#ProductType');
+            const label = $('#amountLabel');
+            function refreshLabel() {
+                if (productType.val() == '@((int)ProductType.CreditCard)') {
+                    label.text('Credit limit');
+                } else if (productType.val() == '@((int)ProductType.Loan)') {
+                    label.text('Loan amount');
+                } else {
+                    label.text('Opening amount');
+                }
+            }
+            productType.on('change', refreshLabel);
+            refreshLabel();
+        });
+    </script>
+}

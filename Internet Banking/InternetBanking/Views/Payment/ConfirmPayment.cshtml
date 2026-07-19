@@ -1,0 +1,33 @@
+﻿@model InternetBanking.Core.Application.ViewModels.Payment.ConfirmPaymentViewModel
+@{
+    ViewData["Title"] = "Confirm Beneficiary Payment";
+}
+
+<div class="row justify-content-center mt-4">
+    <div class="col-lg-6 col-xl-5">
+        <div class="card app-card">
+            <div class="card-body p-4 p-lg-5">
+                <span class="badge badge-soft brand mb-3">Final review</span>
+                <h1 class="h4 mb-2">Confirm payment to @Model.BeneficiaryName</h1>
+                <p class="text-secondary mb-4">Please review the beneficiary payment details before submitting the transaction.</p>
+
+                <div class="info-list mb-4">
+                    <div class="info-row"><span>Source account</span><strong>@Model.SourceAccountNumber</strong></div>
+                    <div class="info-row"><span>Destination account</span><strong>@Model.DestinationAccountNumber</strong></div>
+                    <div class="info-row"><span>Amount</span><strong>@Model.Amount.ToString("C")</strong></div>
+                </div>
+
+                <form method="post" asp-controller="Payment" asp-action="ConfirmPayment">
+                    <input type="hidden" asp-for="SubmissionToken" />
+                    <input type="hidden" asp-for="SourceAccountNumber" />
+                    <input type="hidden" asp-for="DestinationAccountNumber" />
+                    <input type="hidden" asp-for="Amount" />
+                    <div class="d-flex justify-content-end gap-2 flex-wrap">
+                        <a class="btn btn-outline-secondary" asp-action="BeneficiaryPayment">Cancel</a>
+                        <button type="submit" class="btn btn-primary">Confirm Payment</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

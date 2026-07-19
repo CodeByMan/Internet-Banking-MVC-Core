@@ -1,0 +1,233 @@
+﻿@model InternetBanking.Core.Application.ViewModels.Dashboard.ClientDashboardViewModel
+@{
+    ViewData["Title"] = "Client Dashboard";
+}
+
+<div class="page-header">
+    <div>
+        <span class="badge badge-soft brand mb-2">Client workspace</span>
+        <h1>Digital banking dashboard</h1>
+        <p>Track balances, debt, products, and personal transaction activity inside a modern fintech-style dashboard.</p>
+    </div>
+    <div class="page-actions">
+        <a asp-controller="Payment" asp-action="ExpressPayment" class="btn btn-primary"><i class="bi bi-send-fill me-2"></i>New Payment</a>
+        <a asp-controller="Payment" asp-action="History" class="btn btn-outline-secondary"><i class="bi bi-clock-history me-2"></i>View Full History</a>
+    </div>
+</div>
+
+<div class="metric-grid mb-4">
+    <article class="metric-card">
+        <div class="metric-card-head">
+            <div>
+                <div class="metric-label">Total products</div>
+                <div class="metric-value">@Model.TotalProducts</div>
+            </div>
+            <div class="metric-icon"><i class="bi bi-collection-fill"></i></div>
+        </div>
+        <div class="metric-subtitle">@Model.SavingsAccounts savings, @Model.CreditCards cards, @Model.Loans loans.</div>
+    </article>
+
+    <article class="metric-card">
+        <div class="metric-card-head">
+            <div>
+                <div class="metric-label">Available balance</div>
+                <div class="metric-value">@Model.TotalAvailableBalance.ToString("C0")</div>
+            </div>
+            <div class="metric-icon"><i class="bi bi-wallet-fill"></i></div>
+        </div>
+        <div class="metric-subtitle">Combined available balance across all assigned products.</div>
+    </article>
+
+    <article class="metric-card">
+        <div class="metric-card-head">
+            <div>
+                <div class="metric-label">Outstanding debt</div>
+                <div class="metric-value">@Model.TotalOutstandingDebt.ToString("C0")</div>
+            </div>
+            <div class="metric-icon"><i class="bi bi-cash-coin"></i></div>
+        </div>
+        <div class="metric-subtitle">Credit card and loan balances still outstanding.</div>
+    </article>
+
+    <article class="metric-card">
+        <div class="metric-card-head">
+            <div>
+                <div class="metric-label">Recent activity</div>
+                <div class="metric-value">@Model.RecentActivity.Count</div>
+            </div>
+            <div class="metric-icon"><i class="bi bi-activity"></i></div>
+        </div>
+        <div class="metric-subtitle">Latest operations shown below for quick review.</div>
+    </article>
+</div>
+
+<div class="dashboard-grid">
+    <div class="dashboard-column">
+        <section class="card app-card">
+            <div class="card-body p-4">
+                <div class="card-title-row">
+                    <div>
+                        <h3>My products</h3>
+                        <p>Every banking product assigned to this client profile.</p>
+                    </div>
+                    <span class="badge badge-soft brand">Current products</span>
+                </div>
+
+                <div class="data-table-wrap">
+                    <table class="table align-middle">
+                        <thead>
+                            <tr>
+                                <th>Account Number</th>
+                                <th>Type</th>
+                                <th>Available Balance</th>
+                                <th>Outstanding Debt</th>
+                                <th>Primary</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.Products.Any())
+                            {
+                                @foreach (var product in Model.Products)
+                                {
+                                    <tr>
+                                        <td class="table-highlight">@product.AccountNumber</td>
+                                        <td>@product.ProductType.GetDisplayName()</td>
+                                        <td>@product.Balance.ToString("C")</td>
+                                        <td>@product.Debt.ToString("C")</td>
+                                        <td>
+                                            @if (product.IsPrincipal)
+                                            {
+                                                <span class="badge badge-soft success">Primary</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge badge-soft brand">Secondary</span>
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="5">
+                                        <div class="empty-state">
+                                            <strong>No products assigned yet.</strong>
+                                            <div class="text-secondary mt-2">Ask an administrator to assign a savings account, credit card, or loan to continue.</div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <section class="card app-card">
+            <div class="card-body p-4">
+                <div class="card-title-row">
+                    <div>
+                        <h3>Recent customer activity</h3>
+                        <p>Latest payments and transfers affecting this customer profile.</p>
+                    </div>
+                    <a asp-controller="Payment" asp-action="History" class="btn btn-outline-secondary btn-sm">Open history</a>
+                </div>
+
+                <div class="data-table-wrap">
+                    <table class="table align-middle">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Type</th>
+                                <th>Direction</th>
+                                <th>Source</th>
+                                <th>Destination</th>
+                                <th class="text-end">Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.RecentActivity.Any())
+                            {
+                                @foreach (var item in Model.RecentActivity)
+                                {
+                                    <tr>
+                                        <td>@(item.Created?.ToLocalTime().ToString("yyyy-MM-dd HH:mm") ?? "N/A")</td>
+                                        <td><span class="badge badge-soft brand">@item.PaymentType.GetDisplayName()</span></td>
+                                        <td>@item.Direction</td>
+                                        <td>@item.SourceAccountNumber</td>
+                                        <td>@item.DestinationAccountNumber</td>
+                                        <td class="text-end fw-semibold">@item.Amount.ToString("C")</td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="6">
+                                        <div class="empty-state">
+                                            <strong>No recent activity yet.</strong>
+                                            <div class="text-secondary mt-2">Make a payment or transfer to see your activity feed here.</div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <aside class="dashboard-sidebar">
+        <section class="card app-card">
+            <div class="card-body p-4">
+                <div class="card-title-row">
+                    <div>
+                        <h3>Account summary</h3>
+                        <p>Current totals calculated from your assigned products.</p>
+                    </div>
+                </div>
+                <div class="quick-list">
+                    <div class="quick-item">
+                        <small>Available balance</small>
+                        <strong>@Model.TotalAvailableBalance.ToString("C")</strong>
+                    </div>
+                    <div class="quick-item">
+                        <small>Outstanding debt</small>
+                        <strong>@Model.TotalOutstandingDebt.ToString("C")</strong>
+                    </div>
+                    <div class="quick-item">
+                        <small>Recent operations</small>
+                        <strong>@Model.RecentActivity.Count shown on this dashboard</strong>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="card app-card">
+            <div class="card-body p-4">
+                <div class="card-title-row">
+                    <div>
+                        <h3>Quick actions</h3>
+                        <p>Frequently used customer workflows.</p>
+                    </div>
+                </div>
+                <div class="quick-list">
+                    <a class="quick-item" asp-controller="Payment" asp-action="ExpressPayment">
+                        <small>Fast transfer</small>
+                        <strong>Send an express payment</strong>
+                    </a>
+                    <a class="quick-item" asp-controller="Beneficiary" asp-action="Index">
+                        <small>Recipient management</small>
+                        <strong>Add or review beneficiaries</strong>
+                    </a>
+                    <a class="quick-item" asp-controller="Payment" asp-action="AccountTransfer">
+                        <small>Internal movement</small>
+                        <strong>Transfer between your own accounts</strong>
+                    </a>
+                </div>
+            </div>
+        </section>
+    </aside>
+</div>

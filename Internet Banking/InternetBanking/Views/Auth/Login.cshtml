@@ -1,0 +1,422 @@
+﻿@model InternetBanking.Core.Application.ViewModels.User.LoginViewModel
+@{
+    Layout = "_AuthLayout";
+    ViewData["Title"] = "Sign In";
+}
+
+<style>
+    html,
+    body {
+        width: 100%;
+        height: 100%;
+        min-height: 100%;
+        margin: 0;
+        overflow: hidden;
+    }
+
+    .signin-page {
+        position: relative;
+        isolation: isolate;
+        display: grid;
+        place-items: center;
+        width: 100%;
+        height: 100vh;
+        height: 100dvh;
+        padding: clamp(.65rem, 2vw, 1.5rem);
+        overflow: hidden;
+        background:
+            radial-gradient(circle at 12% 15%, rgba(255, 255, 255, .20), transparent 28%),
+            radial-gradient(circle at 88% 85%, rgba(129, 140, 248, .28), transparent 30%),
+            linear-gradient(135deg, #172554 0%, #2738c8 48%, #465fff 100%);
+    }
+
+    .signin-page::before,
+    .signin-page::after {
+        content: "";
+        position: absolute;
+        z-index: -1;
+        border-radius: 999px;
+        filter: blur(2px);
+        pointer-events: none;
+    }
+
+    .signin-page::before {
+        top: -9rem;
+        right: -7rem;
+        width: 24rem;
+        height: 24rem;
+        border: 1px solid rgba(255, 255, 255, .16);
+        box-shadow:
+            0 0 0 3rem rgba(255, 255, 255, .025),
+            0 0 0 7rem rgba(255, 255, 255, .018);
+    }
+
+    .signin-page::after {
+        bottom: -10rem;
+        left: -8rem;
+        width: 22rem;
+        height: 22rem;
+        background: rgba(255, 255, 255, .06);
+    }
+
+    .signin-card {
+        width: min(100%, 430px);
+        max-height: calc(100dvh - clamp(1.3rem, 4vw, 3rem));
+        padding: clamp(1rem, 2.5vh, 1.65rem);
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, .74);
+        border-radius: clamp(1.15rem, 3vw, 1.65rem);
+        background: var(--surface, #fff);
+        background: color-mix(in srgb, var(--surface, #fff) 94%, transparent);
+        box-shadow: 0 24px 70px rgba(15, 23, 42, .30);
+        backdrop-filter: blur(18px);
+        -webkit-backdrop-filter: blur(18px);
+    }
+
+    .signin-brand {
+        display: flex;
+        align-items: center;
+        gap: .7rem;
+        margin-bottom: clamp(.7rem, 1.8vh, 1rem);
+    }
+
+    .signin-brand-icon {
+        display: grid;
+        flex: 0 0 auto;
+        place-items: center;
+        width: 2.55rem;
+        height: 2.55rem;
+        border-radius: .85rem;
+        color: #fff;
+        font-size: 1.2rem;
+        background: linear-gradient(135deg, #465fff, #2437c8);
+        box-shadow: 0 10px 24px rgba(70, 95, 255, .28);
+    }
+
+    .signin-brand-copy strong,
+    .signin-brand-copy span {
+        display: block;
+    }
+
+    .signin-brand-copy strong {
+        color: var(--text-main, #111827);
+        font-family: "Outfit", "Inter", sans-serif;
+        font-size: 1rem;
+        line-height: 1.1;
+    }
+
+    .signin-brand-copy span {
+        margin-top: .15rem;
+        color: var(--text-muted, #667085);
+        font-size: .74rem;
+    }
+
+    .signin-header {
+        margin-bottom: clamp(.75rem, 2vh, 1.15rem);
+    }
+
+    .signin-header h1 {
+        margin: 0;
+        color: var(--text-main, #111827);
+        font-family: "Outfit", "Inter", sans-serif;
+        font-size: clamp(1.55rem, 4.8vw, 2rem);
+        font-weight: 700;
+        letter-spacing: -.025em;
+        line-height: 1.08;
+    }
+
+    .signin-header p {
+        margin: .38rem 0 0;
+        color: var(--text-muted, #667085);
+        font-size: clamp(.78rem, 2.5vw, .9rem);
+        line-height: 1.4;
+    }
+
+    .signin-alert {
+        margin-bottom: .7rem;
+        padding: .58rem .75rem;
+        border-radius: .8rem;
+        font-size: .8rem;
+        line-height: 1.35;
+    }
+
+    .signin-form {
+        display: grid;
+        gap: clamp(.58rem, 1.45vh, .82rem);
+    }
+
+    .signin-field {
+        min-width: 0;
+    }
+
+    .signin-field .form-label {
+        margin-bottom: .3rem;
+        font-size: .8rem !important;
+    }
+
+    .signin-input-wrap {
+        position: relative;
+    }
+
+    .signin-input-icon {
+        position: absolute;
+        top: 50%;
+        left: .9rem;
+        z-index: 2;
+        color: var(--text-muted, #667085);
+        font-size: .95rem;
+        transform: translateY(-50%);
+        pointer-events: none;
+    }
+
+    .signin-input-wrap .form-control {
+        min-height: 44px;
+        height: 44px;
+        padding: .55rem 2.7rem .55rem 2.65rem;
+        border-radius: .85rem !important;
+        font-size: .88rem;
+    }
+
+    .signin-password-toggle {
+        position: absolute;
+        top: 50%;
+        right: .45rem;
+        z-index: 3;
+        display: grid;
+        place-items: center;
+        width: 2.15rem;
+        height: 2.15rem;
+        padding: 0;
+        border: 0;
+        border-radius: .65rem;
+        color: var(--text-muted, #667085);
+        background: transparent;
+        transform: translateY(-50%);
+    }
+
+    .signin-password-toggle:hover,
+    .signin-password-toggle:focus-visible {
+        color: #465fff;
+        background: rgba(70, 95, 255, .08);
+        outline: none;
+    }
+
+    .signin-form .text-danger,
+    .signin-form .validation-summary-errors {
+        margin-top: .22rem;
+        font-size: .73rem;
+        line-height: 1.25;
+    }
+
+    .signin-form .validation-summary-errors ul {
+        margin: 0;
+        padding-left: 1.05rem;
+    }
+
+    .signin-submit {
+        min-height: 44px;
+        margin-top: .05rem;
+        border: 0;
+        border-radius: .85rem !important;
+        font-size: .9rem;
+        font-weight: 700;
+        box-shadow: 0 10px 24px rgba(70, 95, 255, .24);
+    }
+
+    .signin-demo {
+        display: flex;
+        align-items: flex-start;
+        gap: .5rem;
+        margin: clamp(.65rem, 1.7vh, .95rem) 0 0;
+        padding-top: clamp(.6rem, 1.5vh, .85rem);
+        border-top: 1px solid var(--border-color, #e4e7ec);
+        color: var(--text-muted, #667085);
+        font-size: .7rem;
+        line-height: 1.35;
+    }
+
+    .signin-demo i {
+        flex: 0 0 auto;
+        margin-top: .04rem;
+        color: #465fff;
+    }
+
+    .signin-demo strong {
+        color: var(--text-main, #111827);
+        font-weight: 600;
+    }
+
+    @@media (max-width: 480px) {
+        .signin-page {
+            padding: .65rem;
+        }
+
+        .signin-card {
+            width: 100%;
+            max-height: calc(100dvh - 1.3rem);
+            padding: .95rem;
+            border-radius: 1.15rem;
+        }
+
+        .signin-brand-icon {
+            width: 2.35rem;
+            height: 2.35rem;
+        }
+    }
+
+    @@media (max-height: 640px) {
+        .signin-card {
+            padding-top: .85rem;
+            padding-bottom: .85rem;
+        }
+
+        .signin-brand {
+            margin-bottom: .5rem;
+        }
+
+        .signin-header {
+            margin-bottom: .62rem;
+        }
+
+        .signin-header p {
+            margin-top: .22rem;
+        }
+
+        .signin-form {
+            gap: .48rem;
+        }
+
+        .signin-demo {
+            margin-top: .55rem;
+            padding-top: .5rem;
+        }
+    }
+
+    @@media (max-height: 540px) {
+        .signin-brand-copy span,
+        .signin-header p,
+        .signin-demo {
+            display: none;
+        }
+
+        .signin-brand {
+            margin-bottom: .4rem;
+        }
+
+        .signin-header {
+            margin-bottom: .5rem;
+        }
+
+        .signin-input-wrap .form-control,
+        .signin-submit {
+            min-height: 40px;
+            height: 40px;
+        }
+    }
+
+    @@media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+            scroll-behavior: auto !important;
+            transition-duration: .01ms !important;
+            animation-duration: .01ms !important;
+            animation-iteration-count: 1 !important;
+        }
+    }
+</style>
+
+<main class="signin-page">
+    <section class="signin-card" aria-labelledby="signin-title">
+        <div class="signin-brand">
+            <span class="signin-brand-icon" aria-hidden="true">
+                <i class="bi bi-bank2"></i>
+            </span>
+            <span class="signin-brand-copy">
+                <strong>Internet Banking</strong>
+                <span>Secure role-based access</span>
+            </span>
+        </div>
+
+        <header class="signin-header">
+            <h1 id="signin-title">Welcome back</h1>
+            <p>Sign in with your locally configured banking account.</p>
+        </header>
+
+        @if (Model.HasError)
+        {
+            <div class="alert alert-danger signin-alert" role="alert">@Model.Error</div>
+        }
+
+        <form class="signin-form" method="post" asp-controller="Auth" asp-action="Login">
+            <div asp-validation-summary="All" class="text-danger"></div>
+
+            <div class="signin-field">
+                <label asp-for="UserName" class="form-label"></label>
+                <div class="signin-input-wrap">
+                    <i class="bi bi-person signin-input-icon" aria-hidden="true"></i>
+                    <input asp-for="UserName"
+                           class="form-control"
+                           autocomplete="username"
+                           autocapitalize="none"
+                           spellcheck="false"
+                           placeholder="Enter your username" />
+                </div>
+            </div>
+
+            <div class="signin-field">
+                <label asp-for="Password" class="form-label"></label>
+                <div class="signin-input-wrap">
+                    <i class="bi bi-lock signin-input-icon" aria-hidden="true"></i>
+                    <input asp-for="Password"
+                           class="form-control"
+                           autocomplete="current-password"
+                           placeholder="Enter your password" />
+                    <button class="signin-password-toggle"
+                            type="button"
+                            id="togglePassword"
+                            aria-label="Show password"
+                            aria-pressed="false">
+                        <i class="bi bi-eye" aria-hidden="true"></i>
+                    </button>
+                </div>
+            </div>
+
+            <button class="btn btn-primary w-100 signin-submit" type="submit">
+                Sign in
+                <i class="bi bi-arrow-right ms-1" aria-hidden="true"></i>
+            </button>
+        </form>
+
+        <p class="signin-demo">
+            <i class="bi bi-shield-check" aria-hidden="true"></i>
+            <span><strong>Demo usernames:</strong> adminuser, clientuser, and aliclient. Passwords remain secured in User Secrets.</span>
+        </p>
+    </section>
+</main>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        (() => {
+            const passwordInput = document.getElementById('Password');
+            const toggleButton = document.getElementById('togglePassword');
+
+            if (!passwordInput || !toggleButton) return;
+
+            toggleButton.addEventListener('click', () => {
+                const showPassword = passwordInput.type === 'password';
+                passwordInput.type = showPassword ? 'text' : 'password';
+                toggleButton.setAttribute('aria-pressed', showPassword.toString());
+                toggleButton.setAttribute('aria-label', showPassword ? 'Hide password' : 'Show password');
+
+                const icon = toggleButton.querySelector('i');
+                if (icon) {
+                    icon.className = showPassword ? 'bi bi-eye-slash' : 'bi bi-eye';
+                }
+            });
+        })();
+    </script>
+}
+
+

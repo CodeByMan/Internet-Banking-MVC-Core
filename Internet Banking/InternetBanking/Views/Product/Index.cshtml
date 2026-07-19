@@ -1,0 +1,71 @@
+@using InternetBanking.Core.Application.Enums
+@model List<InternetBanking.Core.Application.ViewModels.Product.ProductViewModel>
+@{
+    ViewData["Title"] = "Products";
+    var userId = ViewBag.UserId;
+}
+
+<div class="page-header">
+    <div>
+        <span class="badge badge-soft brand mb-2">Product management</span>
+        <h1>Client products</h1>
+        <p>Assign and review banking products for the selected customer using a clean operations table.</p>
+    </div>
+    <div class="page-actions">
+        <a asp-controller="Product" asp-action="Create" asp-route-userId="@userId" class="btn btn-primary"><i class="bi bi-plus-circle-fill me-2"></i>Add Product</a>
+    </div>
+</div>
+
+<section class="card app-card">
+    <div class="card-body p-4">
+        <div class="data-table-wrap">
+            <table class="table align-middle">
+                <thead>
+                    <tr>
+                        <th>Account Number</th>
+                        <th>Client</th>
+                        <th>Balance</th>
+                        <th>Debt</th>
+                        <th>Product Type</th>
+                        <th>Primary</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var product in Model)
+                    {
+                        <tr>
+                            <td class="table-highlight">@product.AccountNumber</td>
+                            <td>@product.FullName</td>
+                            <td>@product.Balance.ToString("C")</td>
+                            <td>@product.Debt.ToString("C")</td>
+                            <td><span class="badge badge-soft brand">@product.ProductType.GetDisplayName()</span></td>
+                            <td>
+                                <span class="badge @(product.IsPrincipal ? "badge-soft success" : "badge-soft brand")">
+                                    @(product.IsPrincipal ? "Primary" : "Secondary")
+                                </span>
+                            </td>
+                            <td class="text-end">
+                                @if (!product.IsPrincipal)
+                                {
+                                    if (product.ProductType == ProductType.SavingAccount || product.Debt == 0)
+                                    {
+                                        <a class="btn btn-outline-danger btn-sm" asp-controller="Product" asp-action="Delete" asp-route-id="@product.Id">
+                                            <i class="bi bi-trash-fill me-1"></i>Delete
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        <button class="btn btn-outline-secondary btn-sm" disabled>
+                                            <i class="bi bi-lock-fill me-1"></i>Clear debt first
+                                        </button>
+                                    }
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>

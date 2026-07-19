@@ -1,0 +1,148 @@
+﻿@using InternetBanking.Core.Application.Enums
+
+@{
+    var currentController = ViewContext.RouteData.Values["controller"]?.ToString() ?? string.Empty;
+    var currentAction = ViewContext.RouteData.Values["action"]?.ToString() ?? string.Empty;
+    bool isAuthenticated = User.Identity?.IsAuthenticated == true;
+    bool isAdmin = User.IsInRole(Roles.Admin.ToString());
+    var userName = User.Identity?.Name ?? "User";
+    var initials = string.IsNullOrWhiteSpace(userName) ? "IB" : userName.Substring(0, Math.Min(2, userName.Length)).ToUpperInvariant();
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Internet Banking</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/InternetBanking.WebApp.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/tailadmin-premium.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/custom.css" asp-append-version="true" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+</head>
+<body>
+    <div class="app-shell">
+        <aside class="shell-sidebar" id="appSidebar">
+            <a class="shell-brand" asp-controller="Home" asp-action="Index">
+                <span class="brand-mark"><i class="bi bi-bank2"></i></span>
+                <span class="brand-copy">
+                    <strong>Internet Banking</strong>
+                    <small>Operations dashboard</small>
+                </span>
+            </a>
+
+            @if (isAuthenticated)
+            {
+                <nav class="shell-nav">
+                    <div class="shell-nav-group">
+                        <div class="shell-nav-group-title">Overview</div>
+                        <a class="shell-link @(currentController == "Home" ? "active" : "")" asp-controller="Home" asp-action="Index">
+                            <i class="bi bi-grid-1x2-fill"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </div>
+
+                    @if (isAdmin)
+                    {
+                        <div class="shell-nav-group">
+                            <div class="shell-nav-group-title">Administration</div>
+                            <a class="shell-link @(currentController == "User" && currentAction == "Index" ? "active" : "")" asp-controller="User" asp-action="Index">
+                                <i class="bi bi-people-fill"></i>
+                                <span>User Management</span>
+                            </a>
+                            <a class="shell-link @(currentController == "User" && (currentAction == "Create" || currentAction == "Edit") ? "active" : "")" asp-controller="User" asp-action="Create">
+                                <i class="bi bi-person-plus-fill"></i>
+                                <span>Create User</span>
+                            </a>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="shell-nav-group">
+                            <div class="shell-nav-group-title">Payments</div>
+                            <a class="shell-link @(currentController == "Payment" && currentAction == "ExpressPayment" ? "active" : "")" asp-controller="Payment" asp-action="ExpressPayment"><i class="bi bi-send-fill"></i><span>Express Payment</span></a>
+                            <a class="shell-link @(currentController == "Payment" && currentAction == "CreditCardPayment" ? "active" : "")" asp-controller="Payment" asp-action="CreditCardPayment"><i class="bi bi-credit-card-2-front-fill"></i><span>Credit Card Payment</span></a>
+                            <a class="shell-link @(currentController == "Payment" && currentAction == "LoanPayment" ? "active" : "")" asp-controller="Payment" asp-action="LoanPayment"><i class="bi bi-cash-stack"></i><span>Loan Payment</span></a>
+                            <a class="shell-link @(currentController == "Payment" && currentAction == "BeneficiaryPayment" ? "active" : "")" asp-controller="Payment" asp-action="BeneficiaryPayment"><i class="bi bi-person-heart"></i><span>Beneficiary Payment</span></a>
+                            <a class="shell-link @(currentController == "Payment" && currentAction == "CashAdvances" ? "active" : "")" asp-controller="Payment" asp-action="CashAdvances"><i class="bi bi-wallet2"></i><span>Cash Advance</span></a>
+                            <a class="shell-link @(currentController == "Payment" && currentAction == "AccountTransfer" ? "active" : "")" asp-controller="Payment" asp-action="AccountTransfer"><i class="bi bi-arrow-left-right"></i><span>Account Transfer</span></a>
+                        </div>
+
+                        <div class="shell-nav-group">
+                            <div class="shell-nav-group-title">Customer Tools</div>
+                            <a class="shell-link @(currentController == "Beneficiary" ? "active" : "")" asp-controller="Beneficiary" asp-action="Index"><i class="bi bi-person-lines-fill"></i><span>Beneficiaries</span></a>
+                            <a class="shell-link @(currentController == "Payment" && currentAction == "History" ? "active" : "")" asp-controller="Payment" asp-action="History"><i class="bi bi-clock-history"></i><span>Activity History</span></a>
+                        </div>
+                    }
+                </nav>
+
+                <div class="upgrade-panel">
+                    <strong>@(isAdmin ? "Operations cockpit" : "Customer experience")</strong>
+                    <p>@(isAdmin ? "Use the banking control center to manage customers, products, and platform activity." : "Use the upgraded finance dashboard to track products, payments, and history with better clarity.")</p>
+                    <a class="btn btn-light w-100" asp-controller="Home" asp-action="Index">Open Workspace</a>
+                </div>
+            }
+        </aside>
+
+        <div class="mobile-backdrop" id="sidebarBackdrop"></div>
+
+        <div class="shell-content">
+            <header class="topbar">
+                <div class="topbar-inner">
+                    <div class="topbar-start">
+                        <button type="button" class="menu-button d-lg-none" id="sidebarToggle" aria-label="Open navigation">
+                            <i class="bi bi-list"></i>
+                        </button>
+                        <div class="topbar-search d-none d-md-block">
+                            <i class="bi bi-search"></i>
+                            <input type="text" value="Browse users, products, and workflows" readonly />
+                            <button type="button" class="command-pill">Ctrl K</button>
+                        </div>
+                    </div>
+                    <div class="topbar-end">
+                        <button type="button" class="theme-button" id="themeToggle" aria-label="Toggle theme">
+                            <i class="bi bi-moon-stars"></i>
+                        </button>
+                        @if (isAuthenticated)
+                        {
+                            <div class="user-chip">
+                                <span class="avatar-dot">@initials</span>
+                                <span>
+                                    <strong>@userName</strong>
+                                    <small>@(isAdmin ? "Administrator" : "Client account")</small>
+                                </span>
+                            </div>
+                            <form method="post" asp-controller="Auth" asp-action="LogOut" class="d-inline">
+                                <button type="submit" class="btn btn-outline-secondary">Sign Out</button>
+                            </form>
+                        }
+                    </div>
+                </div>
+            </header>
+
+            <main class="page-container">
+                @RenderBody()
+            </main>
+            <div class="footer-note">Internet Banking · Account access and payment management</div>
+        </div>
+    </div>
+
+    <script>
+        (function () {
+            const savedTheme = localStorage.getItem('ib-theme');
+            if (savedTheme === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'dark');
+            }
+        })();
+    </script>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
+
